@@ -1,29 +1,32 @@
-node {
-    // Variables
-    def appName = "my_node_app"
-    
-    stage('Checkout') {
-        echo 'Checking out the code...'
-        checkout scm
-    }
-    
-    stage('Install Dependencies') {
-        echo 'Installing Node.js dependencies...'
-        sh 'npm install'
-    }
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out the code...'
+                checkout scm
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing Node.js dependencies...'
+                sh 'npm install'
+            }
+        }
 
-    stage('Run Tests') {
-        echo 'Running tests...'
-        sh 'npm test'
-    }
-
-    stage('Build') {
-        echo 'Building the application...'
-        sh 'npm run build'
-    }
-
-    stage('Deploy') {
-        echo 'Simulating deployment...'
-        sh 'echo "Deploying application to server (e.g., Docker, AWS, etc.)"'
+        stage('Fix Permissions for Jest') {
+            steps {
+                echo 'Fixing permissions for Jest...'
+                sh 'chmod +x node_modules/.bin/jest' // Fix permissions for jest binary
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                echo 'Running tests...'
+                sh 'npx jest' // Run tests with npx
+            }
+        }
     }
 }
